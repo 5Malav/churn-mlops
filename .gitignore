@@ -1,0 +1,128 @@
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ============================================
+# Virtual Environment
+# ============================================
+.venv/
+venv/
+ENV/
+env/
+
+# ============================================
+# IDE / Editor
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================
+# OS
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================================
+# Jupyter
+# ============================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ============================================
+# Testing & Coverage
+# ============================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# ============================================
+# Type Checking
+# ============================================
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+
+# ============================================
+# Environment Variables / Secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+secrets.yaml
+
+# ============================================
+# ML / Data Science
+# ============================================
+mlruns/
+mlartifacts/
+*.pkl
+*.joblib
+*.h5
+*.pth
+*.ckpt
+
+# ============================================
+# DVC (we'll set up later)
+# ============================================
+# DVC tracks data, but we ignore the cache locally
+.dvc/cache/
+.dvc/tmp/
+
+# ============================================
+# Hydra outputs
+# ============================================
+outputs/
+multirun/
+
+# ============================================
+# Project-specific
+# ============================================
+# Profiling reports (generated, can regenerate)
+reports/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

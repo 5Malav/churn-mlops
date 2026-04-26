@@ -1,0 +1,34 @@
+# ============================================
+# PHASE 1: Training a reproducible churn model
+# ============================================
+
+# Data manipulation
+pandas
+numpy
+
+# Data validation
+pandera
+
+# Auto EDA
+ydata-profiling
+
+# Machine learning
+scikit-learn
+lightgbm
+imbalanced-learn
+
+# Hyperparameter tuning
+optuna
+
+# Experiment tracking
+mlflow
+
+# Configuration management
+hydra-core
+
+# Logging
+loguru
+
+# Testing
+pytest
+pytest-cov
