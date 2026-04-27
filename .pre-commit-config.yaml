@@ -1,0 +1,51 @@
+# ============================================================
+# Pre-commit hooks: Auto-run quality checks before each commit
+# Hooks fail = commit blocked. Fix the issue, then re-commit.
+# ============================================================
+
+repos:
+  # --------------------------------------------------------
+  # Built-in safety hooks (small, fast, catch common mistakes)
+  # --------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace      # remove trailing spaces
+      - id: end-of-file-fixer        # ensure files end with newline
+      - id: check-yaml               # validate YAML files
+      - id: check-toml               # validate TOML files
+      - id: check-added-large-files  # block files >500KB
+        args: ['--maxkb=500']
+      - id: check-merge-conflict     # block leftover merge markers
+      - id: detect-private-key       # block accidental key commits
+
+  # --------------------------------------------------------
+  # Ruff: lint + auto-fix
+  # --------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # --------------------------------------------------------
+  # Black: code formatter
+  # --------------------------------------------------------
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        language_version: python3.11
+
+  # --------------------------------------------------------
+  # Mypy: static type checker
+  # --------------------------------------------------------
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pandas-stubs
+          - types-PyYAML
+        args: [--ignore-missing-imports]

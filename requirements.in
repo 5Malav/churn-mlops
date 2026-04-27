@@ -32,3 +32,9 @@ loguru
 # Testing
 pytest
 pytest-cov
+
+# Code quality
+pre-commit
+ruff
+black
+mypy
