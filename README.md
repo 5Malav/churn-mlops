@@ -49,12 +49,13 @@ This project is the foundation of my **production ML reliability** specializatio
 
 Architecture diagram will be added in Phase 8.
 
-Pipeline flow:
+**Pipeline flow:**
 
+~~~
 Data → Validation → Feature Engineering → Training → Registry
-↓
+                                                        ↓
 Cloud Storage ← Drift Detection ← Monitoring ← Serving API
-
+~~~
 ---
 
 ## 🚀 Quick Start
@@ -89,9 +90,9 @@ pre-commit run --all-files
 ```
 
 ---
-
 ## 📁 Project Structure
 
+~~~
 churn-mlops/
 ├── data/
 │   ├── raw/          # Untouched original data (sacred)
@@ -112,7 +113,7 @@ churn-mlops/
 ├── pyproject.toml    # Single config for all dev tools
 ├── requirements.in   # Top-level dependencies
 └── requirements.txt  # Locked dependency versions
-
+~~~
 ---
 
 ## 📊 Phase Progress
