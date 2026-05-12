@@ -31,6 +31,8 @@ select = [
 ]
 ignore = [
     "E501",  # line-too-long handled by formatter
+    "N803",  # Argument name should be lowercase (allow X, X_train for ML convention)
+    "N806",  # Variable in function should be lowercase (allow X, X_train for ML convention)
 ]
 
 [tool.ruff.lint.per-file-ignores]
