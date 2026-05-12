@@ -119,14 +119,50 @@ churn-mlops/
 ## 📊 Phase Progress
 
 - [x] **Phase 0:** Foundation (pyenv, venv, Python 3.11.9)
-- [x] **Phase 1:** Reproducible training *(in progress)*
-- [ ] **Phase 2:** Experiment tracking with MLflow
+- [x] **Phase 1:** Reproducible training ✅
+  - [x] Pre-commit hooks (ruff, black, ruff-format, end-of-file-fixer)
+  - [x] Pandera schema validation (21 columns, happy + sad path tested)
+  - [x] LightGBM training with SMOTE class balancing
+  - [x] MLflow experiment tracking (params, metrics, model artifacts)
+  - [x] Reproducibility verified (3 runs, identical metrics)
+- [ ] **Phase 2:** Hyperparameter tuning with Optuna
 - [ ] **Phase 3:** Data + model versioning with DVC
 - [ ] **Phase 4:** Prediction API with FastAPI
 - [ ] **Phase 5:** Containerization with Docker
 - [ ] **Phase 6:** Pipeline automation with Prefect + CI/CD
 - [ ] **Phase 7:** GCP Cloud Run deployment with Terraform
 - [ ] **Phase 8:** Monitoring + drift detection + polish
+
+---
+
+## 🎯 v1.0 Status — What Works
+
+The training pipeline is end-to-end functional on the 30-row sample dataset:
+
+~~~bash
+# Run the full training pipeline
+python -m src.churn_mlops.models.train
+~~~
+
+**Latest run metrics (sample dataset):**
+
+| Metric    | Value  |
+|-----------|--------|
+| Accuracy  | 0.8333 |
+| Precision | 1.0000 |
+| Recall    | 0.5000 |
+| F1 Score  | 0.6667 |
+| ROC AUC   | 1.0000 |
+
+> **Note:** These metrics are noisy on a 30-row test set (only 6 test samples).
+> Phase 1.10 will scale to the full 594K-row dataset where metrics become statistically meaningful.
+
+**View experiments:**
+
+~~~bash
+mlflow ui --backend-store-uri file:./mlruns
+# Open http://localhost:5000
+~~~
 
 ---
 
