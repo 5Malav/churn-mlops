@@ -134,35 +134,49 @@ churn-mlops/
 - [ ] **Phase 8:** Monitoring + drift detection + polish
 
 ---
+## 🎯 v1.1 Status — Trained on Real Data
 
-## 🎯 v1.0 Status — What Works
-
-The training pipeline is end-to-end functional on the 30-row sample dataset:
+The training pipeline is end-to-end functional on the **full 594K-row Telco dataset**.
 
 ~~~bash
 # Run the full training pipeline
 python -m src.churn_mlops.models.train
 ~~~
 
-**Latest run metrics (sample dataset):**
+**v1.1 metrics (594K training rows):**
 
-| Metric    | Value  |
-|-----------|--------|
-| Accuracy  | 0.8333 |
-| Precision | 1.0000 |
-| Recall    | 0.5000 |
-| F1 Score  | 0.6667 |
-| ROC AUC   | 1.0000 |
+| Metric    | Value  | Interpretation |
+|-----------|--------|----------------|
+| Accuracy  | 0.8216 | 82% of all predictions correct |
+| Precision | 0.5696 | When model predicts "churn", 57% are real churners |
+| Recall    | 0.8506 | Model catches **85%** of actual churners ⭐ |
+| F1 Score  | 0.6823 | Balanced metric of precision + recall |
+| ROC AUC   | 0.9090 | Strong ranking ability across 118K test samples |
 
-> **Note:** These metrics are noisy on a 30-row test set (only 6 test samples).
-> Phase 1.10 will scale to the full 594K-row dataset where metrics become statistically meaningful.
+**Class distribution (real-world imbalance preserved):**
 
-**View experiments:**
+| Class | Count | Percentage |
+|-------|-------|------------|
+| No churn (0) | 460,377 | 77.5% |
+| Churn (1)    | 133,817 | 22.5% |
+
+**View experiments in MLflow:**
 
 ~~~bash
 mlflow ui --backend-store-uri file:./mlruns
 # Open http://localhost:5000
 ~~~
+
+---
+
+## 📊 Version History
+
+| Version | Date | Dataset | Key Achievement |
+|---------|------|---------|-----------------|
+| v1.0 | May 2026 | 30 rows (sample) | Pipeline correctness verified end-to-end |
+| **v1.1** | **May 2026** | **594K rows (full)** | **Real-data baseline: ROC AUC 0.91, Recall 0.85** |
+
+**Engineering note:** SMOTE balancing took ~90 minutes at full scale due to O(n²) nearest-neighbor search across 107K minority samples. For Phase 2 hyperparameter tuning (Optuna), the pipeline will be modified to support stratified subsampling for fast iteration — standard MLOps practice for compute-bound experimentation. Final tuned model will be retrained on full data for the v1.2 release.
 
 ---
 

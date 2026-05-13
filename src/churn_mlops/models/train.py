@@ -36,8 +36,11 @@ from src.churn_mlops.data.loader import load_churn_data
 # ============================================================
 # CONFIGURATION
 # ============================================================
+# Before (Phase 1.8):
+# DATA_PATH = Path("data/raw/train_mini.csv")
 
-DATA_PATH = Path("data/raw/train_mini.csv")
+# After (Phase 1.10):
+DATA_PATH = Path("data/raw/train.csv")
 TARGET_COLUMN = "Churn"
 TEST_SIZE = 0.2
 RANDOM_SEED = 42
