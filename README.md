@@ -134,31 +134,34 @@ churn-mlops/
 - [ ] **Phase 8:** Monitoring + drift detection + polish
 
 ---
-## 🎯 v1.1 Status — Trained on Real Data
+## 🎯 v1.2 Status — Optuna-Tuned on Real Data
 
-The training pipeline is end-to-end functional on the **full 594K-row Telco dataset**.
+The training pipeline is end-to-end functional, **Optuna-tuned**, on the full 594K-row Telco dataset.
 
 ~~~bash
 # Run the full training pipeline
 python -m src.churn_mlops.models.train
 ~~~
 
-**v1.1 metrics (594K training rows):**
+**v1.2 metrics (594K training rows, Optuna-tuned hyperparameters, class_weight balancing):**
 
 | Metric    | Value  | Interpretation |
 |-----------|--------|----------------|
-| Accuracy  | 0.8216 | 82% of all predictions correct |
-| Precision | 0.5696 | When model predicts "churn", 57% are real churners |
-| Recall    | 0.8506 | Model catches **85%** of actual churners ⭐ |
-| F1 Score  | 0.6823 | Balanced metric of precision + recall |
-| ROC AUC   | 0.9090 | Strong ranking ability across 118K test samples |
+| Accuracy  | 0.8296 | 83% of all predictions correct |
+| Precision | 0.5837 | When model predicts "churn", 58% are real churners |
+| Recall    | 0.8487 | Model catches **85%** of actual churners ⭐ |
+| F1 Score  | 0.6917 | Balanced metric of precision + recall |
+| ROC AUC   | 0.9143 | Strong ranking ability across 118K test samples |
 
-**Class distribution (real-world imbalance preserved):**
+**Performance gains vs v1.1:**
 
-| Class | Count | Percentage |
-|-------|-------|------------|
-| No churn (0) | 460,377 | 77.5% |
-| Churn (1)    | 133,817 | 22.5% |
+| Improvement | v1.1 | v1.2 | Change |
+|-------------|------|------|--------|
+| F1 Score    | 0.6823 | 0.6917 | **+0.94%** |
+| ROC AUC     | 0.9090 | 0.9143 | **+0.53%** |
+| Training time | ~92 min | ~11 sec | **~500x faster** ⚡ |
+
+**Tuning methodology:** 30-trial Optuna study on a stratified 50K subsample, optimizing F1 with TPE sampler. Winning hyperparameters (learning_rate=0.0101, num_leaves=169, min_child_samples=63, feature_fraction=0.5665, bagging_fraction=0.6944) were then applied to the full dataset. The combination of class_weight balancing (instead of SMOTE) + Optuna-tuned params delivered both higher accuracy AND dramatically faster training.
 
 **View experiments in MLflow:**
 
@@ -175,6 +178,8 @@ mlflow ui --backend-store-uri file:./mlruns
 |---------|------|---------|-----------------|
 | v1.0 | May 2026 | 30 rows (sample) | Pipeline correctness verified end-to-end |
 | **v1.1** | **May 2026** | **594K rows (full)** | **Real-data baseline: ROC AUC 0.91, Recall 0.85** |
+
+| **v1.2** | **May 2026** | **594K rows + Optuna-tuned** | **Tuned model: F1 0.69, ROC AUC 0.91, training 500x faster than v1.1** |
 
 **Engineering note:** SMOTE balancing took ~90 minutes at full scale due to O(n²) nearest-neighbor search across 107K minority samples. For Phase 2 hyperparameter tuning (Optuna), the pipeline will be modified to support stratified subsampling for fast iteration — standard MLOps practice for compute-bound experimentation. Final tuned model will be retrained on full data for the v1.2 release.
 
