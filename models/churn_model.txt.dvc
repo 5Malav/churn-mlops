@@ -1,0 +1,5 @@
+outs:
+- md5: 3c9d4008a846027e82ca3ac8b0a8ae3a
+  size: 2910992
+  hash: md5
+  path: churn_model.txt

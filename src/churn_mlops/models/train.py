@@ -51,6 +51,9 @@ BALANCING_STRATEGY: str = "class_weight"
 # MLflow configuration
 MLFLOW_TRACKING_URI = "file:./mlruns"
 MLFLOW_EXPERIMENT_NAME = "churn-prediction"
+
+# Model export (Phase 3 — DVC-tracked production artifact)
+MODEL_OUTPUT_PATH = Path("models/churn_model.txt")
 # MODEL_PARAMS — tuned via Optuna study (May 18, 2026)
 # Best trial: #21 on 50K subsample, F1=0.6984
 # Original (Phase 1.8) values kept as comments for reference.
@@ -443,6 +446,11 @@ def main() -> None:
 
         # Step 7: Evaluate
         metrics = evaluate_model(model, X_test, y_test)
+
+        # Step 7.5: Export model as DVC-tracked production artifact (Phase 3)
+        MODEL_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        model.save_model(str(MODEL_OUTPUT_PATH))
+        logger.success(f"✅ Model saved to {MODEL_OUTPUT_PATH}")
 
         # Step 8: Log everything to MLflow
         mlflow.log_params(MODEL_PARAMS)
