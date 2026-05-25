@@ -2,7 +2,7 @@
 
 End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards with reproducibility, automated quality checks, observability, and cloud deployment.
 
-> **Status:** 🚧 In active development — Phase 1 of 8
+> **Status:** 🚧 In active development — Phase 3 of 8 complete
 
 ---
 
@@ -29,8 +29,8 @@ This project is the foundation of my **production ML reliability** specializatio
 - **Optuna** for hyperparameter tuning
 
 ### MLOps Stack
-- **DVC** for data versioning *(coming Phase 3)*
-- **MLflow** for experiment tracking + model registry *(Phase 2)*
+- **DVC** for data + model versioning ✅
+- **MLflow** for experiment tracking + model registry ✅
 - **FastAPI** + **Uvicorn** for model serving *(Phase 4)*
 - **Docker** + **docker-compose** for containerization *(Phase 5)*
 - **Prefect** for pipeline orchestration *(Phase 6)*
@@ -95,10 +95,11 @@ pre-commit run --all-files
 ~~~
 churn-mlops/
 ├── data/
-│   ├── raw/          # Untouched original data (sacred)
+│   ├── raw/          # Untouched original data (sacred, DVC-tracked)
 │   ├── interim/      # Intermediate cleaning steps
 │   ├── processed/    # Modeling-ready data
 │   └── external/     # Third-party data
+├── models/           # Trained model artifacts (DVC-tracked)
 ├── src/
 │   └── churn_mlops/
 │       ├── data/     # Data loading + validation
@@ -109,7 +110,9 @@ churn-mlops/
 ├── tests/            # Pytest tests
 ├── notebooks/        # Jupyter exploration only
 ├── configs/          # Hydra YAML configs
-├── scripts/          # One-off CLI scripts
+├── scripts/          # One-off CLI scripts (incl. DVC stages)
+├── dvc.yaml          # DVC pipeline definition (validate → train)
+├── dvc.lock          # Pinned hashes for reproducibility
 ├── pyproject.toml    # Single config for all dev tools
 ├── requirements.in   # Top-level dependencies
 └── requirements.txt  # Locked dependency versions
@@ -125,8 +128,17 @@ churn-mlops/
   - [x] LightGBM training with SMOTE class balancing
   - [x] MLflow experiment tracking (params, metrics, model artifacts)
   - [x] Reproducibility verified (3 runs, identical metrics)
-- [ ] **Phase 2:** Hyperparameter tuning with Optuna
-- [ ] **Phase 3:** Data + model versioning with DVC
+- [x] **Phase 2:** Hyperparameter tuning with Optuna ✅
+  - [x] Stratified subsampling for fast iteration (50K subset, 0.0003% class drift)
+  - [x] Pluggable balancing strategies (SMOTE / class_weight / none)
+  - [x] 30-trial Optuna study with TPE sampler, optimizing F1
+  - [x] class_weight chosen over SMOTE: same F1, ~500x faster training
+- [x] **Phase 3:** Data + model versioning with DVC ✅
+  - [x] DVC tracks 594K-row dataset (Git stores 93-byte pointers, not 80MB)
+  - [x] Local DVC remote for offsite data + model storage
+  - [x] Production model exported as versioned artifact (churn_model.txt)
+  - [x] 2-stage reproducible pipeline (validate → train) via dvc.yaml
+  - [x] `dvc repro` rebuilds the exact model; `dvc.lock` pins all hashes
 - [ ] **Phase 4:** Prediction API with FastAPI
 - [ ] **Phase 5:** Containerization with Docker
 - [ ] **Phase 6:** Pipeline automation with Prefect + CI/CD
@@ -172,16 +184,39 @@ mlflow ui --backend-store-uri file:./mlruns
 
 ---
 
+## 🔄 Reproducing This Project
+
+This project uses DVC for full data and model reproducibility:
+
+~~~bash
+# 1. Clone the repo
+git clone https://github.com/5Malav/churn-mlops.git
+cd churn-mlops
+
+# 2. Set up environment
+pip-sync requirements.txt
+
+# 3. Pull DVC-tracked data and model from remote
+dvc pull
+
+# 4. Reproduce the entire pipeline (validate → train)
+dvc repro
+~~~
+
+The `dvc.lock` file pins exact hashes of all dependencies and outputs, so `dvc repro` produces a bit-for-bit identical model. The pipeline is defined in `dvc.yaml` as two stages: **validate** (Pandera schema check) and **train** (LightGBM with Optuna-tuned hyperparameters).
+
+> **Note:** The DVC remote in this project is a local folder (development setup). Production deployment (Phase 7) will migrate to Google Cloud Storage.
+
+---
+
 ## 📊 Version History
 
 | Version | Date | Dataset | Key Achievement |
 |---------|------|---------|-----------------|
 | v1.0 | May 2026 | 30 rows (sample) | Pipeline correctness verified end-to-end |
 | **v1.1** | **May 2026** | **594K rows (full)** | **Real-data baseline: ROC AUC 0.91, Recall 0.85** |
-
 | **v1.2** | **May 2026** | **594K rows + Optuna-tuned** | **Tuned model: F1 0.69, ROC AUC 0.91, training 500x faster than v1.1** |
-
-**Engineering note:** SMOTE balancing took ~90 minutes at full scale due to O(n²) nearest-neighbor search across 107K minority samples. For Phase 2 hyperparameter tuning (Optuna), the pipeline will be modified to support stratified subsampling for fast iteration — standard MLOps practice for compute-bound experimentation. Final tuned model will be retrained on full data for the v1.2 release.
+| **v1.3** | **May 2026** | **594K rows + DVC pipeline** | **Full data + model versioning, reproducible `dvc repro` pipeline** |
 
 ---
 
