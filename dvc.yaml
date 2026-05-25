@@ -1,0 +1,19 @@
+stages:
+  validate:
+    cmd: python -m scripts.validate_data
+    deps:
+      - data/raw/train.csv
+      - scripts/validate_data.py
+      - src/churn_mlops/data/loader.py
+      - src/churn_mlops/data/schema.py
+    always_changed: false
+
+  train:
+    cmd: python -m src.churn_mlops.models.train
+    deps:
+      - data/raw/train.csv
+      - src/churn_mlops/models/train.py
+      - src/churn_mlops/data/loader.py
+      - src/churn_mlops/data/schema.py
+    outs:
+      - models/churn_model.txt

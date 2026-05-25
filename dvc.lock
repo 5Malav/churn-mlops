@@ -1,0 +1,45 @@
+schema: '2.0'
+stages:
+  validate:
+    cmd: python -m scripts.validate_data
+    deps:
+    - path: data/raw/train.csv
+      hash: md5
+      md5: 1c6cfe5e7567ac95bb13547da91f6ce7
+      size: 80512352
+    - path: scripts/validate_data.py
+      hash: md5
+      md5: 7d132b1ecc3c606a5a8d2dd21a96c3b5
+      size: 738
+    - path: src/churn_mlops/data/loader.py
+      hash: md5
+      md5: 83d55899e8a359a1c485fc1b86a3b060
+      size: 1633
+    - path: src/churn_mlops/data/schema.py
+      hash: md5
+      md5: 78b4a08d700a25201aad93072f0533c0
+      size: 3623
+  train:
+    cmd: python -m src.churn_mlops.models.train
+    deps:
+    - path: data/raw/train.csv
+      hash: md5
+      md5: 1c6cfe5e7567ac95bb13547da91f6ce7
+      size: 80512352
+    - path: src/churn_mlops/data/loader.py
+      hash: md5
+      md5: 83d55899e8a359a1c485fc1b86a3b060
+      size: 1633
+    - path: src/churn_mlops/data/schema.py
+      hash: md5
+      md5: 78b4a08d700a25201aad93072f0533c0
+      size: 3623
+    - path: src/churn_mlops/models/train.py
+      hash: md5
+      md5: 4db751a5566cdf6ce0ade636332aff2c
+      size: 17419
+    outs:
+    - path: models/churn_model.txt
+      hash: md5
+      md5: 3c9d4008a846027e82ca3ac8b0a8ae3a
+      size: 2910992
