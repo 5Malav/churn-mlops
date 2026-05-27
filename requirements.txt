@@ -34,7 +34,9 @@ antlr4-python3-runtime==4.9.3
     #   hydra-core
     #   omegaconf
 anyio==4.13.0
-    # via starlette
+    # via
+    #   httpx
+    #   starlette
 appdirs==1.4.4
     # via
     #   iterative-telemetry
@@ -65,7 +67,10 @@ celery==5.6.3
     #   dvc
     #   dvc-task
 certifi==2026.4.22
-    # via requests
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
 cffi==2.0.0
     # via
     #   cryptography
@@ -235,12 +240,18 @@ gto==1.9.0
 gunicorn==25.3.0
     # via mlflow
 h11==0.16.0
-    # via uvicorn
+    # via
+    #   httpcore
+    #   uvicorn
+httpcore==1.0.9
+    # via httpx
 httplib2==0.31.2
     # via
     #   google-api-python-client
     #   google-auth-httplib2
     #   oauth2client
+httpx==0.28.1
+    # via -r requirements.in
 huey==2.6.0
     # via mlflow
 hydra-core==1.3.2
@@ -252,6 +263,7 @@ identify==2.6.19
 idna==3.13
     # via
     #   anyio
+    #   httpx
     #   requests
     #   yarl
 imagehash==4.3.2

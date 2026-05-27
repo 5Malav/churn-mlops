@@ -41,3 +41,6 @@ mypy
 
 # Phase 3 — Data + model versioning
 dvc[gdrive]
+
+# Phase 4 — API testing
+httpx
