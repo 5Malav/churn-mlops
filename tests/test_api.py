@@ -52,3 +52,21 @@ def test_bad_input_rejected():
     """Broken customer (missing fields) returns 422."""
     response = client.post("/predict", json={"gender": "Female"})
     assert response.status_code == 422
+
+
+def test_prediction_error_handled(monkeypatch):
+    """If prediction crashes internally, API returns a clean 500 (not a traceback)."""
+
+    # Replace predict_churn with a function that always crashes
+    def boom(*args, **kwargs):
+        raise ValueError("simulated model failure")
+
+    monkeypatch.setattr("src.churn_mlops.api.app.predict_churn", boom)
+
+    response = client.post("/predict", json=VALID_CUSTOMER)
+
+    # API should catch the crash and return a clean 500
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "Prediction failed. Please check your input and try again."
+    }

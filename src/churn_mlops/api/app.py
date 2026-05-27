@@ -1,6 +1,7 @@
 """FastAPI app — serves churn predictions over HTTP."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from loguru import logger
 
 from src.churn_mlops.api.schemas import CustomerFeatures, PredictionResponse
 from src.churn_mlops.models.predict import load_model, predict_churn
@@ -27,5 +28,14 @@ def health() -> dict:
 @app.post("/predict", response_model=PredictionResponse)
 def predict(customer: CustomerFeatures) -> dict:
     """Take a customer, return churn probability + prediction."""
-    customer_dict = customer.model_dump()
-    return predict_churn(model, customer_dict)
+    try:
+        customer_dict = customer.model_dump()
+        return predict_churn(model, customer_dict)
+    except Exception as e:
+        # Log the REAL error for us to debug (server-side only)
+        logger.error(f"Prediction failed: {e}")
+        # Return a CLEAN message to the user (no internals leaked)
+        raise HTTPException(
+            status_code=500,
+            detail="Prediction failed. Please check your input and try again.",
+        ) from e
