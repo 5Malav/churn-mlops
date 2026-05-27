@@ -2,7 +2,7 @@
 
 End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards with reproducibility, automated quality checks, observability, and cloud deployment.
 
-> **Status:** 🚧 In active development — Phase 3 of 8 complete
+> **Status:** 🚧 In active development — Phase 4 of 8 complete
 
 ---
 
@@ -31,7 +31,7 @@ This project is the foundation of my **production ML reliability** specializatio
 ### MLOps Stack
 - **DVC** for data + model versioning ✅
 - **MLflow** for experiment tracking + model registry ✅
-- **FastAPI** + **Uvicorn** for model serving *(Phase 4)*
+- **FastAPI** + **Uvicorn** for model serving ✅
 - **Docker** + **docker-compose** for containerization *(Phase 5)*
 - **Prefect** for pipeline orchestration *(Phase 6)*
 - **GitHub Actions** + **CML** for CI/CD *(Phase 6)*
@@ -105,9 +105,9 @@ churn-mlops/
 │       ├── data/     # Data loading + validation
 │       ├── features/ # Feature engineering
 │       ├── models/   # Training + prediction
-│       ├── api/      # FastAPI service
+│       ├── api/      # FastAPI service (app + schemas)
 │       └── utils/    # Helpers + logging
-├── tests/            # Pytest tests
+├── tests/            # Pytest tests (incl. API tests)
 ├── notebooks/        # Jupyter exploration only
 ├── configs/          # Hydra YAML configs
 ├── scripts/          # One-off CLI scripts (incl. DVC stages)
@@ -139,7 +139,12 @@ churn-mlops/
   - [x] Production model exported as versioned artifact (churn_model.txt)
   - [x] 2-stage reproducible pipeline (validate → train) via dvc.yaml
   - [x] `dvc repro` rebuilds the exact model; `dvc.lock` pins all hashes
-- [ ] **Phase 4:** Prediction API with FastAPI
+- [x] **Phase 4:** Prediction API with FastAPI ✅
+  - [x] Prediction module (loads model, predicts one customer)
+  - [x] Pydantic request/response validation (the input bouncer)
+  - [x] FastAPI app: `/`, `/health`, `/predict` endpoints
+  - [x] Graceful error handling (clean 500, no leaked tracebacks)
+  - [x] 4 automated tests (health, predict, validation, error path)
 - [ ] **Phase 5:** Containerization with Docker
 - [ ] **Phase 6:** Pipeline automation with Prefect + CI/CD
 - [ ] **Phase 7:** GCP Cloud Run deployment with Terraform
@@ -184,6 +189,46 @@ mlflow ui --backend-store-uri file:./mlruns
 
 ---
 
+## 🌐 Prediction API (Phase 4)
+
+The trained model is served as a REST API with FastAPI.
+
+~~~bash
+# Start the API server
+uvicorn src.churn_mlops.api.app:app --reload
+
+# Open interactive docs in your browser
+# http://localhost:8000/docs
+~~~
+
+**Endpoints:**
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/` | Welcome message |
+| GET | `/health` | Health check (for monitoring) |
+| POST | `/predict` | Send a customer → get churn probability + prediction |
+
+**Example prediction request:**
+
+~~~bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"gender":"Female","SeniorCitizen":0,"Partner":"No","Dependents":"No","tenure":2,"PhoneService":"Yes","MultipleLines":"No","InternetService":"Fiber optic","OnlineSecurity":"No","OnlineBackup":"No","DeviceProtection":"No","TechSupport":"No","StreamingTV":"No","StreamingMovies":"No","Contract":"Month-to-month","PaperlessBilling":"Yes","PaymentMethod":"Electronic check","MonthlyCharges":70.70,"TotalCharges":151.65}'
+~~~
+
+**Response:**
+
+~~~json
+{"churn_probability": 0.78, "churn_prediction": 1}
+~~~
+
+Input is validated with Pydantic (malformed requests get a clean 422 error).
+Internal failures return a clean 500 without leaking tracebacks.
+Run the API tests with `pytest tests/test_api.py -v`.
+
+---
+
 ## 🔄 Reproducing This Project
 
 This project uses DVC for full data and model reproducibility:
@@ -217,6 +262,7 @@ The `dvc.lock` file pins exact hashes of all dependencies and outputs, so `dvc r
 | **v1.1** | **May 2026** | **594K rows (full)** | **Real-data baseline: ROC AUC 0.91, Recall 0.85** |
 | **v1.2** | **May 2026** | **594K rows + Optuna-tuned** | **Tuned model: F1 0.69, ROC AUC 0.91, training 500x faster than v1.1** |
 | **v1.3** | **May 2026** | **594K rows + DVC pipeline** | **Full data + model versioning, reproducible `dvc repro` pipeline** |
+| **v1.4** | **May 2026** | **594K rows + REST API** | **Model served via FastAPI: /predict, /health, validated input, graceful errors** |
 
 ---
 
