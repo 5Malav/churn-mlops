@@ -2,7 +2,7 @@
 
 End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards with reproducibility, automated quality checks, observability, and cloud deployment.
 
-> **Status:** 🚧 In active development — Phase 4 of 8 complete
+> **Status:** 🚧 In active development — Phase 5 of 8 complete
 
 ---
 
@@ -32,7 +32,7 @@ This project is the foundation of my **production ML reliability** specializatio
 - **DVC** for data + model versioning ✅
 - **MLflow** for experiment tracking + model registry ✅
 - **FastAPI** + **Uvicorn** for model serving ✅
-- **Docker** + **docker-compose** for containerization *(Phase 5)*
+- **Docker** + **docker-compose** for containerization ✅
 - **Prefect** for pipeline orchestration *(Phase 6)*
 - **GitHub Actions** + **CML** for CI/CD *(Phase 6)*
 
@@ -111,11 +111,16 @@ churn-mlops/
 ├── notebooks/        # Jupyter exploration only
 ├── configs/          # Hydra YAML configs
 ├── scripts/          # One-off CLI scripts (incl. DVC stages)
+├── Dockerfile        # Container recipe (lean, runtime-only deps)
+├── .dockerignore     # Keeps build context lean
+├── docker-compose.yml # One-command container orchestration
 ├── dvc.yaml          # DVC pipeline definition (validate → train)
 ├── dvc.lock          # Pinned hashes for reproducibility
 ├── pyproject.toml    # Single config for all dev tools
-├── requirements.in   # Top-level dependencies
-└── requirements.txt  # Locked dependency versions
+├── requirements.in   # Top-level dev dependencies
+├── requirements.txt  # Locked dev dependency versions
+├── requirements-api.in  # Lean runtime-only dependencies (for Docker)
+└── requirements-api.txt # Locked runtime dependency versions
 ~~~
 ---
 
@@ -145,7 +150,12 @@ churn-mlops/
   - [x] FastAPI app: `/`, `/health`, `/predict` endpoints
   - [x] Graceful error handling (clean 500, no leaked tracebacks)
   - [x] 4 automated tests (health, predict, validation, error path)
-- [ ] **Phase 5:** Containerization with Docker
+- [x] **Phase 5:** Containerization with Docker ✅
+  - [x] Dockerfile with layer-cached builds (deps before code)
+  - [x] Lean runtime-only image (816MB; dev/exploration tools excluded)
+  - [x] Runtime deps pinned to training versions (no train/serve drift)
+  - [x] System libs handled (libgomp1 for LightGBM)
+  - [x] docker-compose for one-command orchestration + auto-restart
 - [ ] **Phase 6:** Pipeline automation with Prefect + CI/CD
 - [ ] **Phase 7:** GCP Cloud Run deployment with Terraform
 - [ ] **Phase 8:** Monitoring + drift detection + polish
@@ -229,6 +239,30 @@ Run the API tests with `pytest tests/test_api.py -v`.
 
 ---
 
+## 🐳 Running with Docker (Phase 5)
+
+The API is fully containerized for portable, reproducible deployment.
+
+~~~bash
+# Build and run with docker-compose (one command)
+docker compose up
+
+# Or build and run manually
+docker build -t churn-api:latest .
+docker run -p 8000:8000 churn-api:latest
+
+# API is then live at http://localhost:8000/docs
+~~~
+
+**Container design notes:**
+- **Lean image (816MB):** the production image installs only runtime dependencies (`requirements-api.txt`) — dev/exploration tools like ydata-profiling, seaborn, and pytest are intentionally excluded for a smaller, faster, more secure image.
+- **No train/serve drift:** runtime dependencies (pandas, numpy, lightgbm) are pinned to the exact versions used during training, so the model behaves identically in the container.
+- **System libraries:** `libgomp1` is installed for LightGBM's OpenMP runtime (the slim base image omits it).
+- **Layer caching:** dependencies are installed before code is copied, so code changes trigger fast rebuilds.
+- **Auto-restart:** `docker-compose.yml` uses `restart: unless-stopped` so the service recovers from crashes.
+
+---
+
 ## 🔄 Reproducing This Project
 
 This project uses DVC for full data and model reproducibility:
@@ -263,6 +297,7 @@ The `dvc.lock` file pins exact hashes of all dependencies and outputs, so `dvc r
 | **v1.2** | **May 2026** | **594K rows + Optuna-tuned** | **Tuned model: F1 0.69, ROC AUC 0.91, training 500x faster than v1.1** |
 | **v1.3** | **May 2026** | **594K rows + DVC pipeline** | **Full data + model versioning, reproducible `dvc repro` pipeline** |
 | **v1.4** | **May 2026** | **594K rows + REST API** | **Model served via FastAPI: /predict, /health, validated input, graceful errors** |
+| **v1.5** | **May 2026** | **594K rows + Docker** | **Containerized: lean 816MB image, compose, pinned runtime deps, portable anywhere** |
 
 ---
 
