@@ -1,0 +1,15 @@
+# Runtime dependencies for the prediction API ONLY.
+# Dev/exploration tools (ydata-profiling, seaborn, mypy, etc.)
+# live in requirements.in and are intentionally excluded from
+# the production Docker image to keep it lean.
+#
+# Versions PINNED to match the training environment so the model
+# loads and predicts identically to how it was trained.
+
+fastapi
+uvicorn
+lightgbm==4.6.0
+pandas==2.3.3
+numpy==2.3.5
+pydantic
+loguru

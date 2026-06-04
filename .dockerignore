@@ -1,0 +1,42 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Git
+.git/
+.gitignore
+
+# Data (DVC-tracked, not for the image)
+data/
+*.csv
+
+# MLflow experiments (not needed in production image)
+mlruns/
+
+# DVC internals
+.dvc/
+*.dvc
+
+# IDE
+.vscode/
+.idea/
+
+# Notebooks (exploration only)
+notebooks/
+
+# OS
+.DS_Store
+
+# Tests (not needed in production image)
+tests/
+
+# Documentation
+README.md
+*.md
+
+# Local DVC storage (not for the image)
+dvc-storage/
