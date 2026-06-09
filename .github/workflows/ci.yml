@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  hello:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the code
@@ -18,7 +18,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Say hello and show Python version
+      - name: Install dependencies
         run: |
-          echo "🤖 Hello from the CI robot!"
-          python --version
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-api.txt
+
+      - name: Run tests
+        run: pytest tests/ -v
