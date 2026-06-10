@@ -39,5 +39,24 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Create a stand-in model for the build
+        run: |
+          pip install lightgbm numpy
+          python -c "
+          import numpy as np, lightgbm as lgb
+          from pathlib import Path
+          Path('models').mkdir(exist_ok=True)
+          rng = np.random.default_rng(42)
+          X = rng.random((100, 19)); y = rng.integers(0, 2, size=100)
+          m = lgb.train({'objective':'binary','verbose':-1}, lgb.Dataset(X, label=y), num_boost_round=5)
+          m.save_model('models/churn_model.txt')
+          print('✅ stand-in model created')
+          "
+
       - name: Build the Docker image
         run: docker build -t churn-api:ci .
