@@ -10,7 +10,18 @@ from src.churn_mlops.models.predict import load_model, predict_churn
 app = FastAPI(title="Churn Prediction API")
 
 # Load the model ONCE when the app starts (not on every request)
-model = load_model()
+# model = load_model()
+# Lazily load the model on first use, then cache it.
+# This keeps module import cheap (and testable without the model file).
+_model = None
+
+
+def get_model():
+    """Load the model once on first call, then reuse the cached instance."""
+    global _model
+    if _model is None:
+        _model = load_model()
+    return _model
 
 
 @app.get("/")
@@ -30,7 +41,8 @@ def predict(customer: CustomerFeatures) -> dict:
     """Take a customer, return churn probability + prediction."""
     try:
         customer_dict = customer.model_dump()
-        return predict_churn(model, customer_dict)
+        # return predict_churn(model, customer_dict)
+        return predict_churn(get_model(), customer_dict)
     except Exception as e:
         # Log the REAL error for us to debug (server-side only)
         logger.error(f"Prediction failed: {e}")
