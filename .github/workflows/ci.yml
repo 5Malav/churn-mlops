@@ -32,3 +32,12 @@ jobs:
 
       - name: Run tests
         run: pytest tests/ -v
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build -t churn-api:ci .
