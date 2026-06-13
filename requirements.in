@@ -44,3 +44,6 @@ dvc[gdrive]
 
 # Phase 4 — API testing
 httpx
+
+# Phase 6 — pipeline orchestration
+prefect

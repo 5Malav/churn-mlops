@@ -17,10 +17,15 @@ aiohttp-retry==2.9.1
     #   scmrepo
 aiosignal==1.4.0
     # via aiohttp
+aiosqlite==0.22.1
+    # via prefect
 alembic==1.18.4
     # via
     #   mlflow
     #   optuna
+    #   prefect
+amplitude-analytics==1.2.3
+    # via prefect
 amqp==5.3.1
     # via kombu
 annotated-doc==0.0.4
@@ -36,11 +41,18 @@ antlr4-python3-runtime==4.9.3
 anyio==4.13.0
     # via
     #   httpx
+    #   prefect
     #   starlette
 appdirs==1.4.4
     # via
     #   iterative-telemetry
     #   pydrive2
+apprise==1.11.0
+    # via prefect
+asgi-lifespan==2.1.0
+    # via prefect
+asyncpg==0.31.0
+    # via prefect
 asyncssh==2.23.0
     # via scmrepo
 atpublic==7.0.0
@@ -48,26 +60,36 @@ atpublic==7.0.0
 attrs==26.1.0
     # via
     #   aiohttp
+    #   cyclopts
     #   dvc
     #   dvc-data
+    #   jsonschema
+    #   referencing
     #   sqltrie
     #   visions
+beartype==0.22.9
+    # via py-key-value-aio
 billiard==4.2.4
     # via celery
 black==26.3.1
     # via -r requirements.in
 blinker==1.9.0
     # via flask
+burner-redis==0.1.7
+    # via pydocket
 cachetools==7.0.6
     # via
     #   mlflow-skinny
     #   mlflow-tracing
+    #   prefect
+    #   py-key-value-aio
 celery==5.6.3
     # via
     #   dvc
     #   dvc-task
 certifi==2026.4.22
     # via
+    #   apprise
     #   httpcore
     #   httpx
     #   requests
@@ -81,6 +103,7 @@ charset-normalizer==3.4.7
     # via requests
 click==8.3.3
     # via
+    #   apprise
     #   black
     #   celery
     #   click-didyoumean
@@ -88,6 +111,7 @@ click==8.3.3
     #   click-repl
     #   flask
     #   mlflow-skinny
+    #   prefect
     #   typer
     #   uvicorn
 click-didyoumean==0.3.1
@@ -97,31 +121,45 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
     # via celery
 cloudpickle==3.1.2
-    # via mlflow-skinny
+    # via
+    #   mlflow-skinny
+    #   prefect
+    #   pydocket
 colorama==0.4.6
-    # via dvc
+    # via
+    #   dvc
+    #   griffecli
 colorlog==6.10.1
     # via optuna
 configobj==5.0.9
     # via dvc
 contourpy==1.3.3
     # via matplotlib
+coolname==5.0.0
+    # via prefect
 coverage[toml]==7.13.5
     # via pytest-cov
+cronsim==2.7
+    # via pydocket
 cryptography==46.0.7
     # via
     #   asyncssh
     #   google-auth
     #   mlflow
+    #   prefect
     #   pyopenssl
 cycler==0.12.1
     # via matplotlib
+cyclopts==4.18.0
+    # via prefect
 dacite==1.9.2
     # via ydata-profiling
 databricks-sdk==0.105.0
     # via
     #   mlflow-skinny
     #   mlflow-tracing
+dateparser==1.4.0
+    # via prefect
 dictdiffer==0.9.0
     # via dvc-data
 diskcache==5.6.3
@@ -133,7 +171,11 @@ distro==1.9.0
     #   dvc
     #   iterative-telemetry
 docker==7.1.0
-    # via mlflow
+    # via
+    #   mlflow
+    #   prefect
+docstring-parser==0.18.0
+    # via cyclopts
 dpath==2.2.0
     # via dvc
 dulwich==1.2.4
@@ -163,8 +205,12 @@ dvc-task==0.40.2
     # via dvc
 entrypoints==0.4
     # via gto
+exceptiongroup==1.3.1
+    # via prefect
 fastapi==0.136.1
-    # via mlflow-skinny
+    # via
+    #   mlflow-skinny
+    #   prefect
 filelock==3.29.0
     # via
     #   iterative-telemetry
@@ -194,6 +240,7 @@ fsspec[http,tqdm]==2026.4.0
     #   dvc-data
     #   dvc-http
     #   dvc-objects
+    #   prefect
     #   pydrive2
     #   scmrepo
 funcy==2.0
@@ -235,6 +282,18 @@ graphql-core==3.2.8
     #   graphql-relay
 graphql-relay==3.2.0
     # via graphene
+graphviz==0.21
+    # via prefect
+greenlet==3.5.1
+    # via sqlalchemy
+griffe==2.0.2
+    # via prefect
+griffecli==2.0.2
+    # via griffe
+griffelib==2.0.2
+    # via
+    #   griffe
+    #   griffecli
 gto==1.9.0
     # via dvc
 gunicorn==25.3.0
@@ -243,21 +302,35 @@ h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
-httpcore==1.0.9
+h2==4.3.0
     # via httpx
+hpack==4.1.0
+    # via h2
+httpcore==1.0.9
+    # via
+    #   httpx
+    #   prefect
 httplib2==0.31.2
     # via
     #   google-api-python-client
     #   google-auth-httplib2
     #   oauth2client
-httpx==0.28.1
-    # via -r requirements.in
+httpx[http2]==0.28.1
+    # via
+    #   -r requirements.in
+    #   prefect
 huey==2.6.0
     # via mlflow
+humanize==4.15.0
+    # via
+    #   jinja2-humanize-extension
+    #   prefect
 hydra-core==1.3.2
     # via
     #   -r requirements.in
     #   dvc
+hyperframe==6.1.0
+    # via h2
 identify==2.6.19
     # via pre-commit
 idna==3.13
@@ -285,12 +358,24 @@ itsdangerous==2.2.0
 jinja2==3.1.6
     # via
     #   flask
+    #   jinja2-humanize-extension
+    #   prefect
     #   ydata-profiling
+jinja2-humanize-extension==0.4.0
+    # via prefect
 joblib==1.5.3
     # via
     #   imbalanced-learn
     #   phik
     #   scikit-learn
+jsonpatch==1.33
+    # via prefect
+jsonpointer==3.1.1
+    # via jsonpatch
+jsonschema==4.26.0
+    # via prefect
+jsonschema-specifications==2025.9.1
+    # via jsonschema
 kiwisolver==1.5.0
     # via matplotlib
 kombu==5.6.2
@@ -308,6 +393,8 @@ loguru==0.7.3
     # via -r requirements.in
 mako==1.3.11
     # via alembic
+markdown==3.10.2
+    # via apprise
 markdown-it-py==4.2.0
     # via rich
 markupsafe==3.0.3
@@ -381,6 +468,8 @@ numpy==2.3.5
     #   ydata-profiling
 oauth2client==4.1.3
     # via pydrive2
+oauthlib==3.3.1
+    # via requests-oauthlib
 omegaconf==2.3.0
     # via
     #   dvc
@@ -391,6 +480,8 @@ opentelemetry-api==1.41.1
     #   mlflow-tracing
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
+    #   prefect
+    #   pydocket
 opentelemetry-proto==1.41.1
     # via
     #   mlflow-skinny
@@ -406,6 +497,7 @@ optuna==4.8.0
 orjson==3.11.9
     # via
     #   dvc-data
+    #   prefect
     #   sqltrie
 packaging==26.2
     # via
@@ -419,6 +511,7 @@ packaging==26.2
     #   mlflow-tracing
     #   optuna
     #   pandera
+    #   prefect
     #   pytest
     #   skops
     #   statsmodels
@@ -438,9 +531,12 @@ pathspec==1.1.0
     #   black
     #   dvc
     #   mypy
+    #   prefect
     #   scmrepo
 patsy==1.0.2
     # via statsmodels
+pendulum==3.2.0
+    # via prefect
 phik==0.12.5
     # via ydata-profiling
 pillow==12.2.0
@@ -457,12 +553,19 @@ platformdirs==4.9.6
     #   virtualenv
 pluggy==1.6.0
     # via
+    #   prefect
     #   pytest
     #   pytest-cov
 pre-commit==4.6.0
     # via -r requirements.in
+prefect==3.7.2
+    # via -r requirements.in
 prettytable==3.17.0
     # via skops
+prometheus-client==0.25.0
+    # via
+    #   prefect
+    #   pydocket
 prompt-toolkit==3.0.52
     # via click-repl
 propcache==0.4.1
@@ -486,6 +589,8 @@ psutil==7.2.2
     #   flufl-lock
 puremagic==1.30
     # via visions
+py-key-value-aio[memory,redis]==0.4.5
+    # via pydocket
 pyarrow==23.0.1
     # via mlflow
 pyasn1==0.6.3
@@ -506,12 +611,22 @@ pydantic==2.13.3
     #   mlflow-skinny
     #   mlflow-tracing
     #   pandera
+    #   prefect
+    #   pydantic-extra-types
     #   pydantic-settings
     #   ydata-profiling
 pydantic-core==2.46.3
-    # via pydantic
+    # via
+    #   prefect
+    #   pydantic
+pydantic-extra-types==2.11.1
+    # via prefect
 pydantic-settings==2.14.1
-    # via gto
+    # via
+    #   gto
+    #   prefect
+pydocket==0.21.1
+    # via prefect
 pydot==4.0.1
     # via dvc
 pydrive2[fsspec]==1.21.2
@@ -522,6 +637,7 @@ pygments==2.20.0
     # via
     #   pytest
     #   rich
+    #   rich-rst
 pygtrie==2.5.0
     # via
     #   dvc
@@ -546,31 +662,56 @@ pytest-cov==7.1.0
 python-dateutil==2.9.0.post0
     # via
     #   celery
+    #   dateparser
     #   graphene
     #   matplotlib
     #   pandas
+    #   pendulum
+    #   prefect
 python-discovery==1.2.2
     # via virtualenv
 python-dotenv==1.2.2
     # via
     #   mlflow-skinny
     #   pydantic-settings
+python-json-logger==4.1.0
+    # via pydocket
+python-slugify==8.0.4
+    # via prefect
 pytokens==0.4.1
     # via black
 pytz==2026.1.post1
-    # via pandas
+    # via
+    #   dateparser
+    #   pandas
+    #   prefect
 pywavelets==1.9.0
     # via imagehash
 pyyaml==6.0.3
     # via
+    #   apprise
     #   mlflow-skinny
     #   omegaconf
     #   optuna
     #   pre-commit
+    #   prefect
     #   pydrive2
     #   ydata-profiling
+readchar==4.2.2
+    # via prefect
+redis==8.0.0
+    # via
+    #   py-key-value-aio
+    #   pydocket
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+regex==2026.5.9
+    # via dateparser
 requests==2.33.1
     # via
+    #   apprise
     #   databricks-sdk
     #   docker
     #   dvc
@@ -578,18 +719,36 @@ requests==2.33.1
     #   google-api-core
     #   iterative-telemetry
     #   mlflow-skinny
+    #   requests-oauthlib
     #   ydata-profiling
+requests-oauthlib==2.0.0
+    # via apprise
+rfc3339-validator==0.1.4
+    # via prefect
 rich==15.0.0
     # via
+    #   cyclopts
     #   dvc
     #   gto
+    #   prefect
+    #   pydocket
+    #   rich-rst
     #   typer
+rich-rst==2.0.1
+    # via cyclopts
+rpds-py==2026.5.1
+    # via
+    #   jsonschema
+    #   referencing
 rsa==4.9.1
     # via oauth2client
 ruamel-yaml==0.19.1
     # via
     #   dvc
     #   gto
+    #   prefect
+ruamel-yaml-clib==0.2.15
+    # via prefect
 ruff==0.15.12
     # via -r requirements.in
 scikit-learn==1.8.0
@@ -617,7 +776,9 @@ scmrepo==3.6.2
 seaborn==0.13.2
     # via ydata-profiling
 semver==3.0.4
-    # via gto
+    # via
+    #   gto
+    #   prefect
 shellingham==1.5.4
     # via typer
 shortuuid==1.0.13
@@ -630,17 +791,23 @@ six==1.17.0
     # via
     #   oauth2client
     #   python-dateutil
+    #   rfc3339-validator
 sklearn-compat==0.1.5
     # via imbalanced-learn
 skops==0.14.0
     # via mlflow
 smmap==5.0.3
     # via gitdb
-sqlalchemy==2.0.49
+sniffio==1.3.1
+    # via
+    #   asgi-lifespan
+    #   prefect
+sqlalchemy[asyncio]==2.0.49
     # via
     #   alembic
     #   mlflow
     #   optuna
+    #   prefect
 sqlparse==0.5.5
     # via mlflow-skinny
 sqltrie==0.11.2
@@ -653,10 +820,14 @@ tabulate==0.10.0
     # via
     #   dvc
     #   gto
+text-unidecode==1.3
+    # via python-slugify
 threadpoolctl==3.6.0
     # via
     #   imbalanced-learn
     #   scikit-learn
+toml==0.10.2
+    # via prefect
 tomlkit==0.15.0
     # via dvc
 tqdm==4.67.3
@@ -673,7 +844,9 @@ typeguard==4.5.1
     #   pandera
     #   ydata-profiling
 typer==0.25.1
-    # via gto
+    # via
+    #   gto
+    #   pydocket
 typing-extensions==4.15.0
     # via
     #   aiosignal
@@ -681,6 +854,7 @@ typing-extensions==4.15.0
     #   anyio
     #   asyncssh
     #   dulwich
+    #   exceptiongroup
     #   fastapi
     #   graphene
     #   mlflow-skinny
@@ -689,8 +863,13 @@ typing-extensions==4.15.0
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     #   pandera
+    #   prefect
+    #   py-key-value-aio
     #   pydantic
     #   pydantic-core
+    #   pydantic-extra-types
+    #   pydocket
+    #   referencing
     #   sqlalchemy
     #   starlette
     #   typeguard
@@ -707,8 +886,13 @@ tzdata==2026.2
     # via
     #   kombu
     #   pandas
+    #   pendulum
 tzlocal==5.3.1
-    # via celery
+    # via
+    #   celery
+    #   dateparser
+uncalled-for==0.3.2
+    # via pydocket
 uritemplate==4.2.0
     # via google-api-python-client
 urllib3==2.6.3
@@ -717,7 +901,9 @@ urllib3==2.6.3
     #   dulwich
     #   requests
 uvicorn==0.46.0
-    # via mlflow-skinny
+    # via
+    #   mlflow-skinny
+    #   prefect
 vine==5.1.0
     # via
     #   amqp
@@ -735,6 +921,8 @@ wcwidth==0.6.0
     # via
     #   prettytable
     #   prompt-toolkit
+websockets==16.0
+    # via prefect
 werkzeug==3.1.8
     # via
     #   flask
