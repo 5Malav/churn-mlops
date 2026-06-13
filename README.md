@@ -2,7 +2,7 @@
 
 End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards with reproducibility, automated quality checks, observability, and cloud deployment.
 
-> **Status:** 🚧 In active development — Phase 5 of 8 complete
+> **Status:** 🚧 In active development — Phase 6 of 8 complete
 
 ---
 
@@ -33,8 +33,8 @@ This project is the foundation of my **production ML reliability** specializatio
 - **MLflow** for experiment tracking + model registry ✅
 - **FastAPI** + **Uvicorn** for model serving ✅
 - **Docker** + **docker-compose** for containerization ✅
-- **Prefect** for pipeline orchestration *(Phase 6)*
-- **GitHub Actions** + **CML** for CI/CD *(Phase 6)*
+- **Prefect** for pipeline orchestration ✅
+- **GitHub Actions** for CI/CD ✅
 
 ### Cloud & Monitoring
 - **GCP Cloud Run** for serverless deployment *(Phase 7)*
@@ -106,11 +106,13 @@ churn-mlops/
 │       ├── features/ # Feature engineering
 │       ├── models/   # Training + prediction
 │       ├── api/      # FastAPI service (app + schemas)
+│       ├── pipeline/ # Prefect orchestration flow
 │       └── utils/    # Helpers + logging
-├── tests/            # Pytest tests (incl. API tests)
+├── tests/            # Pytest tests (incl. API tests + conftest)
 ├── notebooks/        # Jupyter exploration only
 ├── configs/          # Hydra YAML configs
 ├── scripts/          # One-off CLI scripts (incl. DVC stages)
+├── .github/workflows/ # GitHub Actions CI pipeline
 ├── Dockerfile        # Container recipe (lean, runtime-only deps)
 ├── .dockerignore     # Keeps build context lean
 ├── docker-compose.yml # One-command container orchestration
@@ -156,7 +158,12 @@ churn-mlops/
   - [x] Runtime deps pinned to training versions (no train/serve drift)
   - [x] System libs handled (libgomp1 for LightGBM)
   - [x] docker-compose for one-command orchestration + auto-restart
-- [ ] **Phase 6:** Pipeline automation with Prefect + CI/CD
+- [x] **Phase 6:** Pipeline automation with Prefect + CI/CD ✅
+  - [x] GitHub Actions CI: ruff lint + black format + pytest on every push
+  - [x] Parallel CI job builds the Docker image from scratch
+  - [x] Lazy model loading + test fixture so CI runs without the DVC model
+  - [x] Prefect flow orchestrates validate → train as tracked tasks
+  - [x] Automatic retries on task failure (self-healing pipeline)
 - [ ] **Phase 7:** GCP Cloud Run deployment with Terraform
 - [ ] **Phase 8:** Monitoring + drift detection + polish
 
@@ -263,6 +270,34 @@ docker run -p 8000:8000 churn-api:latest
 
 ---
 
+## 🤖 CI/CD & Orchestration (Phase 6)
+
+### Continuous Integration (GitHub Actions)
+
+Every push to `main` triggers an automated pipeline (`.github/workflows/ci.yml`) with two parallel jobs:
+
+- **test job:** lints with ruff, checks formatting with black, runs the full pytest suite
+- **docker job:** builds the production Docker image from scratch to catch any Dockerfile breakage
+
+Because the model is DVC-tracked (absent on the CI runner), both jobs generate a lightweight stand-in model so the full pipeline runs anywhere. The app uses **lazy model loading** — the module imports cleanly without the model file present, which makes it testable in CI.
+
+### Pipeline Orchestration (Prefect)
+
+The training pipeline is wrapped as a Prefect flow (`src/churn_mlops/pipeline/flow.py`):
+
+~~~bash
+# Run the orchestrated pipeline
+python -m src.churn_mlops.pipeline.flow
+~~~
+
+- **Tasks:** `validate_data` → `train_model`, each tracked with its own state (Completed/Failed)
+- **Automatic retries:** each task retries up to 2 times with a delay on failure — the pipeline self-heals from transient errors instead of dying
+- **Observability:** Prefect tracks every run, task state, and timing; a monitoring dashboard is available via `prefect server start`
+
+This is the foundation for scheduled retraining and failure-alerting in production.
+
+---
+
 ## 🔄 Reproducing This Project
 
 This project uses DVC for full data and model reproducibility:
@@ -298,6 +333,7 @@ The `dvc.lock` file pins exact hashes of all dependencies and outputs, so `dvc r
 | **v1.3** | **May 2026** | **594K rows + DVC pipeline** | **Full data + model versioning, reproducible `dvc repro` pipeline** |
 | **v1.4** | **May 2026** | **594K rows + REST API** | **Model served via FastAPI: /predict, /health, validated input, graceful errors** |
 | **v1.5** | **May 2026** | **594K rows + Docker** | **Containerized: lean 816MB image, compose, pinned runtime deps, portable anywhere** |
+| **v1.6** | **June 2026** | **594K rows + CI/CD** | **GitHub Actions CI (lint/test/build) + Prefect orchestration with retries** |
 
 ---
 
