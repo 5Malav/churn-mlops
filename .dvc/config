@@ -1,4 +1,6 @@
 [core]
-    remote = mylocalstorage
+    remote = gcs
 ['remote "mylocalstorage"']
     url = /Users/malavjoshi/dvc-storage/churn-mlops
+['remote "gcs"']
+    url = gs://churn-mlops-dvc-215271667398/dvc-store

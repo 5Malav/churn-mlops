@@ -10,6 +10,7 @@ aiohttp==3.13.5
     # via
     #   aiohttp-retry
     #   fsspec
+    #   gcsfs
     #   mlflow
 aiohttp-retry==2.9.1
     # via
@@ -160,6 +161,8 @@ databricks-sdk==0.105.0
     #   mlflow-tracing
 dateparser==1.4.0
     # via prefect
+decorator==5.3.1
+    # via gcsfs
 dictdiffer==0.9.0
     # via dvc-data
 diskcache==5.6.3
@@ -187,10 +190,13 @@ dvc[gdrive]==3.67.1
     # via
     #   -r requirements.in
     #   dvc-gdrive
+    #   dvc-gs
 dvc-data==3.18.3
     # via dvc
 dvc-gdrive==3.0.1
     # via dvc
+dvc-gs==3.1.0
+    # via -r requirements.in
 dvc-http==2.32.0
     # via dvc
 dvc-objects==5.2.0
@@ -240,6 +246,7 @@ fsspec[http,tqdm]==2026.4.0
     #   dvc-data
     #   dvc-http
     #   dvc-objects
+    #   gcsfs
     #   prefect
     #   pydrive2
     #   scmrepo
@@ -252,26 +259,54 @@ funcy==2.0
     #   gto
     #   pydrive2
     #   scmrepo
+gcsfs==2026.6.0
+    # via dvc-gs
 gitdb==4.0.12
     # via gitpython
 gitpython==3.1.47
     # via
     #   mlflow-skinny
     #   scmrepo
-google-api-core==2.30.3
-    # via google-api-python-client
+google-api-core[grpc]==2.30.3
+    # via
+    #   google-api-python-client
+    #   google-cloud-core
+    #   google-cloud-storage
+    #   google-cloud-storage-control
 google-api-python-client==2.196.0
     # via pydrive2
 google-auth==2.49.2
     # via
     #   databricks-sdk
+    #   gcsfs
     #   google-api-core
     #   google-api-python-client
     #   google-auth-httplib2
+    #   google-auth-oauthlib
+    #   google-cloud-core
+    #   google-cloud-storage
+    #   google-cloud-storage-control
 google-auth-httplib2==0.4.0
     # via google-api-python-client
-googleapis-common-protos==1.75.0
-    # via google-api-core
+google-auth-oauthlib==1.4.0
+    # via gcsfs
+google-cloud-core==2.6.0
+    # via google-cloud-storage
+google-cloud-storage==3.12.0
+    # via gcsfs
+google-cloud-storage-control==1.12.0
+    # via gcsfs
+google-crc32c==1.8.0
+    # via
+    #   google-cloud-storage
+    #   google-resumable-media
+google-resumable-media==2.10.0
+    # via google-cloud-storage
+googleapis-common-protos[grpc]==1.75.0
+    # via
+    #   google-api-core
+    #   grpc-google-iam-v1
+    #   grpcio-status
 grandalf==0.8
     # via dvc
 graphene==3.4.3
@@ -294,6 +329,17 @@ griffelib==2.0.2
     # via
     #   griffe
     #   griffecli
+grpc-google-iam-v1==0.14.4
+    # via google-cloud-storage-control
+grpcio==1.81.1
+    # via
+    #   google-api-core
+    #   google-cloud-storage-control
+    #   googleapis-common-protos
+    #   grpc-google-iam-v1
+    #   grpcio-status
+grpcio-status==1.81.1
+    # via google-api-core
 gto==1.9.0
     # via dvc
 gunicorn==25.3.0
@@ -573,12 +619,17 @@ propcache==0.4.1
     #   aiohttp
     #   yarl
 proto-plus==1.28.0
-    # via google-api-core
+    # via
+    #   google-api-core
+    #   google-cloud-storage-control
 protobuf==6.33.6
     # via
     #   databricks-sdk
     #   google-api-core
+    #   google-cloud-storage-control
     #   googleapis-common-protos
+    #   grpc-google-iam-v1
+    #   grpcio-status
     #   mlflow-skinny
     #   mlflow-tracing
     #   opentelemetry-proto
@@ -716,13 +767,17 @@ requests==2.33.1
     #   docker
     #   dvc
     #   dvc-studio-client
+    #   gcsfs
     #   google-api-core
+    #   google-cloud-storage
     #   iterative-telemetry
     #   mlflow-skinny
     #   requests-oauthlib
     #   ydata-profiling
 requests-oauthlib==2.0.0
-    # via apprise
+    # via
+    #   apprise
+    #   google-auth-oauthlib
 rfc3339-validator==0.1.4
     # via prefect
 rich==15.0.0
@@ -857,6 +912,7 @@ typing-extensions==4.15.0
     #   exceptiongroup
     #   fastapi
     #   graphene
+    #   grpcio
     #   mlflow-skinny
     #   mypy
     #   opentelemetry-api

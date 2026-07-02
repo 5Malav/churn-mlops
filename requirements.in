@@ -47,3 +47,6 @@ httpx
 
 # Phase 6 — pipeline orchestration
 prefect
+
+# Phase 7 — GCS backend for DVC remote
+dvc-gs
