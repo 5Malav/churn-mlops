@@ -1,8 +1,11 @@
 # Churn MLOps — Production-Grade ML Pipeline
 
-End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards with reproducibility, automated quality checks, observability, and cloud deployment.
+End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards with reproducibility, automated quality checks, containerization, CI/CD, and live cloud deployment.
 
-> **Status:** 🚧 In active development — Phase 6 of 8 complete
+> **🌐 LIVE DEMO:** https://churn-api-215271667398.asia-south1.run.app/docs
+> Try the `/predict` endpoint in the interactive Swagger UI — the model is served from Google Cloud Run.
+
+> **Status:** 🚧 In active development — Phase 7 of 8 (cloud deployment live)
 
 ---
 
@@ -37,9 +40,10 @@ This project is the foundation of my **production ML reliability** specializatio
 - **GitHub Actions** for CI/CD ✅
 
 ### Cloud & Monitoring
-- **GCP Cloud Run** for serverless deployment *(Phase 7)*
-- **GCP Cloud Storage** as DVC remote *(Phase 7)*
-- **Terraform** for Infrastructure-as-Code *(Phase 7)*
+- **GCP Cloud Run** for serverless deployment ✅ **(LIVE)**
+- **GCP Cloud Build** + **Artifact Registry** for build + image storage ✅
+- **GCP Cloud Storage** as DVC remote *(Phase 7 — in progress)*
+- **Terraform** for Infrastructure-as-Code *(Phase 7 — in progress)*
 - **Evidently** for drift detection *(Phase 8)*
 - **Prometheus** + **Grafana** for live monitoring *(Phase 8)*
 
@@ -54,7 +58,7 @@ Architecture diagram will be added in Phase 8.
 ~~~
 Data → Validation → Feature Engineering → Training → Registry
                                                         ↓
-Cloud Storage ← Drift Detection ← Monitoring ← Serving API
+Cloud Run (live) ← Serving API ← Container ← Docker image
 ~~~
 ---
 
@@ -164,7 +168,13 @@ churn-mlops/
   - [x] Lazy model loading + test fixture so CI runs without the DVC model
   - [x] Prefect flow orchestrates validate → train as tracked tasks
   - [x] Automatic retries on task failure (self-healing pipeline)
-- [ ] **Phase 7:** GCP Cloud Run deployment with Terraform
+- [x] **Phase 7:** Cloud deployment with GCP Cloud Run ✅ **(LIVE)**
+  - [x] Containerized API deployed to Cloud Run (serverless, scales to zero)
+  - [x] Cloud Build builds the image; Artifact Registry stores it
+  - [x] Public HTTPS endpoint in asia-south1 (Mumbai)
+  - [x] Resolved first-deploy IAM (service account storage + build roles)
+  - [ ] Migrate DVC remote to Google Cloud Storage *(in progress)*
+  - [ ] Codify infrastructure with Terraform *(in progress)*
 - [ ] **Phase 8:** Monitoring + drift detection + polish
 
 ---
@@ -211,7 +221,7 @@ mlflow ui --backend-store-uri file:./mlruns
 The trained model is served as a REST API with FastAPI.
 
 ~~~bash
-# Start the API server
+# Start the API server locally
 uvicorn src.churn_mlops.api.app:app --reload
 
 # Open interactive docs in your browser
@@ -226,10 +236,10 @@ uvicorn src.churn_mlops.api.app:app --reload
 | GET | `/health` | Health check (for monitoring) |
 | POST | `/predict` | Send a customer → get churn probability + prediction |
 
-**Example prediction request:**
+**Example prediction request (against the LIVE deployment):**
 
 ~~~bash
-curl -X POST http://localhost:8000/predict \
+curl -X POST https://churn-api-215271667398.asia-south1.run.app/predict \
   -H "Content-Type: application/json" \
   -d '{"gender":"Female","SeniorCitizen":0,"Partner":"No","Dependents":"No","tenure":2,"PhoneService":"Yes","MultipleLines":"No","InternetService":"Fiber optic","OnlineSecurity":"No","OnlineBackup":"No","DeviceProtection":"No","TechSupport":"No","StreamingTV":"No","StreamingMovies":"No","Contract":"Month-to-month","PaperlessBilling":"Yes","PaymentMethod":"Electronic check","MonthlyCharges":70.70,"TotalCharges":151.65}'
 ~~~
@@ -237,7 +247,7 @@ curl -X POST http://localhost:8000/predict \
 **Response:**
 
 ~~~json
-{"churn_probability": 0.78, "churn_prediction": 1}
+{"churn_probability": 0.7508, "churn_prediction": 1}
 ~~~
 
 Input is validated with Pydantic (malformed requests get a clean 422 error).
@@ -298,6 +308,31 @@ This is the foundation for scheduled retraining and failure-alerting in producti
 
 ---
 
+## ☁️ Cloud Deployment (Phase 7)
+
+The containerized API is deployed live on **Google Cloud Run** — serverless, auto-scaling, and scale-to-zero (no cost when idle).
+
+**🌐 Live:** https://churn-api-215271667398.asia-south1.run.app/docs
+
+~~~bash
+# Deploy from source (builds in the cloud, pushes, and deploys — one command)
+gcloud run deploy churn-api \
+  --source . \
+  --region asia-south1 \
+  --allow-unauthenticated \
+  --memory 1Gi \
+  --port 8000
+~~~
+
+**Deployment design notes:**
+- **Serverless + scale-to-zero:** Cloud Run runs the container on demand and scales to zero when idle, so a portfolio deployment costs effectively nothing.
+- **Cloud-native build:** `--source .` uses Cloud Build to build the Docker image in the cloud and Artifact Registry to store it — no local push needed.
+- **Region:** deployed to `asia-south1` (Mumbai) for low latency and data residency.
+- **IAM:** first deploy required granting the Cloud Build service account `storage.objectViewer` + `cloudbuild.builds.builder` roles — a common first-deploy permission step.
+- **Cost guardrail:** a billing budget alert notifies at 50/90/100% of a low monthly threshold; combined with scale-to-zero, real spend stays at ₹0.
+
+---
+
 ## 🔄 Reproducing This Project
 
 This project uses DVC for full data and model reproducibility:
@@ -319,7 +354,7 @@ dvc repro
 
 The `dvc.lock` file pins exact hashes of all dependencies and outputs, so `dvc repro` produces a bit-for-bit identical model. The pipeline is defined in `dvc.yaml` as two stages: **validate** (Pandera schema check) and **train** (LightGBM with Optuna-tuned hyperparameters).
 
-> **Note:** The DVC remote in this project is a local folder (development setup). Production deployment (Phase 7) will migrate to Google Cloud Storage.
+> **Note:** The DVC remote in this project is currently a local folder (development setup). Migration to Google Cloud Storage is in progress (Phase 7).
 
 ---
 
@@ -334,6 +369,7 @@ The `dvc.lock` file pins exact hashes of all dependencies and outputs, so `dvc r
 | **v1.4** | **May 2026** | **594K rows + REST API** | **Model served via FastAPI: /predict, /health, validated input, graceful errors** |
 | **v1.5** | **May 2026** | **594K rows + Docker** | **Containerized: lean 816MB image, compose, pinned runtime deps, portable anywhere** |
 | **v1.6** | **June 2026** | **594K rows + CI/CD** | **GitHub Actions CI (lint/test/build) + Prefect orchestration with retries** |
+| **v1.7** | **July 2026** | **594K rows + Cloud** | **Live deployment on GCP Cloud Run: public HTTPS endpoint, serverless, scale-to-zero** |
 
 ---
 
