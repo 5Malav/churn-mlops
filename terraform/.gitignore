@@ -1,0 +1,13 @@
+# Terraform state (may contain sensitive data)
+*.tfstate
+*.tfstate.*
+
+# Provider plugins (large, regenerable)
+.terraform/
+
+# Crash logs
+crash.log
+
+# Variable files that might hold secrets
+*.tfvars
+EOF
