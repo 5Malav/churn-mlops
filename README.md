@@ -1,11 +1,11 @@
 # Churn MLOps — Production-Grade ML Pipeline
 
-End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards with reproducibility, automated quality checks, containerization, CI/CD, and live cloud deployment.
+End-to-end MLOps pipeline for telecom customer churn prediction. Built to production standards: reproducibility, automated quality checks, containerization, CI/CD, live cloud deployment, and infrastructure-as-code.
 
 > **🌐 LIVE DEMO:** https://churn-api-215271667398.asia-south1.run.app/docs
 > Try the `/predict` endpoint in the interactive Swagger UI — the model is served from Google Cloud Run.
 
-> **Status:** 🚧 In active development — Phase 7 of 8 (cloud deployment live)
+> **Status:** 🚧 In active development — Phase 7 of 8 complete (live deployment + IaC)
 
 ---
 
@@ -39,27 +39,34 @@ This project is the foundation of my **production ML reliability** specializatio
 - **Prefect** for pipeline orchestration ✅
 - **GitHub Actions** for CI/CD ✅
 
-### Cloud & Monitoring
+### Cloud & Infrastructure
 - **GCP Cloud Run** for serverless deployment ✅ **(LIVE)**
 - **GCP Cloud Build** + **Artifact Registry** for build + image storage ✅
-- **GCP Cloud Storage** as DVC remote *(Phase 7 — in progress)*
-- **Terraform** for Infrastructure-as-Code *(Phase 7 — in progress)*
+- **GCP Cloud Storage** as DVC remote ✅
+- **Terraform** for Infrastructure-as-Code ✅
+
+### Monitoring (Phase 8)
 - **Evidently** for drift detection *(Phase 8)*
 - **Prometheus** + **Grafana** for live monitoring *(Phase 8)*
 
 ---
 
-## 🏗️ Architecture (Coming Soon)
-
-Architecture diagram will be added in Phase 8.
+## 🏗️ Architecture
 
 **Pipeline flow:**
 
 ~~~
-Data → Validation → Feature Engineering → Training → Registry
-                                                        ↓
-Cloud Run (live) ← Serving API ← Container ← Docker image
+Data → Validation → Training → Model Registry (MLflow)
+                                    ↓
+                          DVC (versioned) → GCS remote
+                                    ↓
+Docker image → Artifact Registry → Cloud Run (live, public HTTPS)
+                                    ↑
+                         Terraform (infra as code)
 ~~~
+
+Architecture diagram will be finalized in Phase 8.
+
 ---
 
 ## 🚀 Quick Start
@@ -103,7 +110,7 @@ churn-mlops/
 │   ├── interim/      # Intermediate cleaning steps
 │   ├── processed/    # Modeling-ready data
 │   └── external/     # Third-party data
-├── models/           # Trained model artifacts (DVC-tracked)
+├── models/           # Trained model artifacts (DVC-tracked → GCS)
 ├── src/
 │   └── churn_mlops/
 │       ├── data/     # Data loading + validation
@@ -113,6 +120,7 @@ churn-mlops/
 │       ├── pipeline/ # Prefect orchestration flow
 │       └── utils/    # Helpers + logging
 ├── tests/            # Pytest tests (incl. API tests + conftest)
+├── terraform/        # Infrastructure-as-Code (GCS bucket + Cloud Run)
 ├── notebooks/        # Jupyter exploration only
 ├── configs/          # Hydra YAML configs
 ├── scripts/          # One-off CLI scripts (incl. DVC stages)
@@ -146,7 +154,7 @@ churn-mlops/
   - [x] class_weight chosen over SMOTE: same F1, ~500x faster training
 - [x] **Phase 3:** Data + model versioning with DVC ✅
   - [x] DVC tracks 594K-row dataset (Git stores 93-byte pointers, not 80MB)
-  - [x] Local DVC remote for offsite data + model storage
+  - [x] DVC remote for offsite data + model storage
   - [x] Production model exported as versioned artifact (churn_model.txt)
   - [x] 2-stage reproducible pipeline (validate → train) via dvc.yaml
   - [x] `dvc repro` rebuilds the exact model; `dvc.lock` pins all hashes
@@ -168,13 +176,13 @@ churn-mlops/
   - [x] Lazy model loading + test fixture so CI runs without the DVC model
   - [x] Prefect flow orchestrates validate → train as tracked tasks
   - [x] Automatic retries on task failure (self-healing pipeline)
-- [x] **Phase 7:** Cloud deployment with GCP Cloud Run ✅ **(LIVE)**
+- [x] **Phase 7:** Cloud deployment + Infrastructure-as-Code ✅ **(LIVE)**
   - [x] Containerized API deployed to Cloud Run (serverless, scales to zero)
   - [x] Cloud Build builds the image; Artifact Registry stores it
   - [x] Public HTTPS endpoint in asia-south1 (Mumbai)
   - [x] Resolved first-deploy IAM (service account storage + build roles)
-  - [ ] Migrate DVC remote to Google Cloud Storage *(in progress)*
-  - [ ] Codify infrastructure with Terraform *(in progress)*
+  - [x] DVC remote migrated to Google Cloud Storage (dvc-gs backend)
+  - [x] Infrastructure codified with Terraform (bucket + Cloud Run + IAM)
 - [ ] **Phase 8:** Monitoring + drift detection + polish
 
 ---
@@ -308,11 +316,13 @@ This is the foundation for scheduled retraining and failure-alerting in producti
 
 ---
 
-## ☁️ Cloud Deployment (Phase 7)
+## ☁️ Cloud Deployment + Infrastructure-as-Code (Phase 7)
 
 The containerized API is deployed live on **Google Cloud Run** — serverless, auto-scaling, and scale-to-zero (no cost when idle).
 
 **🌐 Live:** https://churn-api-215271667398.asia-south1.run.app/docs
+
+### Deployment
 
 ~~~bash
 # Deploy from source (builds in the cloud, pushes, and deploys — one command)
@@ -326,16 +336,41 @@ gcloud run deploy churn-api \
 
 **Deployment design notes:**
 - **Serverless + scale-to-zero:** Cloud Run runs the container on demand and scales to zero when idle, so a portfolio deployment costs effectively nothing.
-- **Cloud-native build:** `--source .` uses Cloud Build to build the Docker image in the cloud and Artifact Registry to store it — no local push needed.
-- **Region:** deployed to `asia-south1` (Mumbai) for low latency and data residency.
+- **Cloud-native build:** `--source .` uses Cloud Build to build the Docker image in the cloud and Artifact Registry to store it.
+- **Region:** `asia-south1` (Mumbai) for low latency and data residency.
 - **IAM:** first deploy required granting the Cloud Build service account `storage.objectViewer` + `cloudbuild.builds.builder` roles — a common first-deploy permission step.
 - **Cost guardrail:** a billing budget alert notifies at 50/90/100% of a low monthly threshold; combined with scale-to-zero, real spend stays at ₹0.
+
+### DVC Remote on Cloud Storage
+
+The DVC remote was migrated from a local folder to a **Google Cloud Storage** bucket (`dvc-gs` backend), so the versioned model + data live in the cloud and are reachable from any machine.
+
+~~~bash
+dvc remote add gcs gs://churn-mlops-dvc-<project>/dvc-store
+dvc remote default gcs
+dvc push   # uploads DVC-tracked model + data to GCS
+~~~
+
+> Note: Python libraries (like DVC's GCS backend) authenticate via Application Default Credentials — `gcloud auth application-default login` — which is separate from the `gcloud` CLI login.
+
+### Infrastructure-as-Code (Terraform)
+
+The cloud infrastructure — the GCS bucket, the Cloud Run service, and public-access IAM — is defined as code in `terraform/main.tf`. Existing resources were adopted with `terraform import`, so the code manages live infrastructure without recreating it.
+
+~~~bash
+cd terraform
+terraform init      # download the Google provider
+terraform plan      # preview changes (read before applying)
+terraform apply     # reconcile infrastructure to match the code
+~~~
+
+Terraform state files (`*.tfstate`) and the provider cache (`.terraform/`) are gitignored; only the source (`main.tf`) and the provider lock file are committed.
+
+> **Future enhancement:** wire CI to `dvc pull` the real model from GCS (replacing the stand-in model used in CI builds), and parameterize the Cloud Run image via a Terraform variable.
 
 ---
 
 ## 🔄 Reproducing This Project
-
-This project uses DVC for full data and model reproducibility:
 
 ~~~bash
 # 1. Clone the repo
@@ -345,7 +380,7 @@ cd churn-mlops
 # 2. Set up environment
 pip-sync requirements.txt
 
-# 3. Pull DVC-tracked data and model from remote
+# 3. Pull DVC-tracked data and model from the GCS remote
 dvc pull
 
 # 4. Reproduce the entire pipeline (validate → train)
@@ -354,22 +389,21 @@ dvc repro
 
 The `dvc.lock` file pins exact hashes of all dependencies and outputs, so `dvc repro` produces a bit-for-bit identical model. The pipeline is defined in `dvc.yaml` as two stages: **validate** (Pandera schema check) and **train** (LightGBM with Optuna-tuned hyperparameters).
 
-> **Note:** The DVC remote in this project is currently a local folder (development setup). Migration to Google Cloud Storage is in progress (Phase 7).
-
 ---
 
 ## 📊 Version History
 
-| Version | Date | Dataset | Key Achievement |
-|---------|------|---------|-----------------|
-| v1.0 | May 2026 | 30 rows (sample) | Pipeline correctness verified end-to-end |
-| **v1.1** | **May 2026** | **594K rows (full)** | **Real-data baseline: ROC AUC 0.91, Recall 0.85** |
-| **v1.2** | **May 2026** | **594K rows + Optuna-tuned** | **Tuned model: F1 0.69, ROC AUC 0.91, training 500x faster than v1.1** |
-| **v1.3** | **May 2026** | **594K rows + DVC pipeline** | **Full data + model versioning, reproducible `dvc repro` pipeline** |
-| **v1.4** | **May 2026** | **594K rows + REST API** | **Model served via FastAPI: /predict, /health, validated input, graceful errors** |
-| **v1.5** | **May 2026** | **594K rows + Docker** | **Containerized: lean 816MB image, compose, pinned runtime deps, portable anywhere** |
-| **v1.6** | **June 2026** | **594K rows + CI/CD** | **GitHub Actions CI (lint/test/build) + Prefect orchestration with retries** |
-| **v1.7** | **July 2026** | **594K rows + Cloud** | **Live deployment on GCP Cloud Run: public HTTPS endpoint, serverless, scale-to-zero** |
+| Version | Date | Milestone | Key Achievement |
+|---------|------|-----------|-----------------|
+| v1.0 | May 2026 | Sample data | Pipeline correctness verified end-to-end |
+| **v1.1** | **May 2026** | **Full data** | **Real-data baseline: ROC AUC 0.91, Recall 0.85** |
+| **v1.2** | **May 2026** | **Optuna-tuned** | **Tuned model: F1 0.69, ROC AUC 0.91, training 500x faster** |
+| **v1.3** | **May 2026** | **DVC pipeline** | **Full data + model versioning, reproducible `dvc repro`** |
+| **v1.4** | **May 2026** | **REST API** | **FastAPI: /predict, /health, validated input, graceful errors** |
+| **v1.5** | **May 2026** | **Docker** | **Containerized: lean 816MB image, compose, pinned deps** |
+| **v1.6** | **June 2026** | **CI/CD** | **GitHub Actions (lint/test/build) + Prefect orchestration with retries** |
+| **v1.7** | **July 2026** | **Cloud** | **Live on GCP Cloud Run: public HTTPS, serverless, scale-to-zero** |
+| **v1.8** | **July 2026** | **Cloud + IaC** | **DVC remote on GCS + full infrastructure codified in Terraform** |
 
 ---
 
