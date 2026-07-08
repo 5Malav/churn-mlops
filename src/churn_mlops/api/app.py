@@ -2,12 +2,16 @@
 
 from fastapi import FastAPI, HTTPException
 from loguru import logger
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.churn_mlops.api.schemas import CustomerFeatures, PredictionResponse
 from src.churn_mlops.models.predict import load_model, predict_churn
 
 # Create the app
 app = FastAPI(title="Churn Prediction API")
+
+# Expose Prometheus metrics at /metrics
+Instrumentator().instrument(app).expose(app)
 
 # Load the model ONCE when the app starts (not on every request)
 # model = load_model()

@@ -50,3 +50,9 @@ prefect
 
 # Phase 7 — GCS backend for DVC remote
 dvc-gs
+
+# Phase 8 — Prometheus metrics for the API
+prometheus-fastapi-instrumentator
+
+# Phase 8 — data drift detection
+evidently

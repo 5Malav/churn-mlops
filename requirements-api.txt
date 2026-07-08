@@ -30,6 +30,10 @@ numpy==2.3.5
     #   scipy
 pandas==2.3.3
     # via -r requirements-api.in
+prometheus-client==0.25.0
+    # via prometheus-fastapi-instrumentator
+prometheus-fastapi-instrumentator==8.0.2
+    # via -r requirements-api.in
 pydantic==2.13.4
     # via
     #   -r requirements-api.in
@@ -45,7 +49,9 @@ scipy==1.17.1
 six==1.17.0
     # via python-dateutil
 starlette==1.2.1
-    # via fastapi
+    # via
+    #   fastapi
+    #   prometheus-fastapi-instrumentator
 typing-extensions==4.15.0
     # via
     #   anyio

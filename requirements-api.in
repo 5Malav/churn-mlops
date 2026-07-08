@@ -13,3 +13,6 @@ pandas==2.3.3
 numpy==2.3.5
 pydantic
 loguru
+
+# Phase 8 — Prometheus metrics
+prometheus-fastapi-instrumentator

@@ -42,8 +42,10 @@ antlr4-python3-runtime==4.9.3
 anyio==4.13.0
     # via
     #   httpx
+    #   litestar
     #   prefect
     #   starlette
+    #   watchfiles
 appdirs==1.4.4
     # via
     #   iterative-telemetry
@@ -91,6 +93,7 @@ celery==5.6.3
 certifi==2026.4.22
     # via
     #   apprise
+    #   evidently
     #   httpcore
     #   httpx
     #   requests
@@ -111,8 +114,11 @@ click==8.3.3
     #   click-plugins
     #   click-repl
     #   flask
+    #   litestar
     #   mlflow-skinny
+    #   nltk
     #   prefect
+    #   rich-click
     #   typer
     #   uvicorn
 click-didyoumean==0.3.1
@@ -145,6 +151,7 @@ cronsim==2.7
 cryptography==46.0.7
     # via
     #   asyncssh
+    #   evidently
     #   google-auth
     #   mlflow
     #   prefect
@@ -163,6 +170,10 @@ dateparser==1.4.0
     # via prefect
 decorator==5.3.1
     # via gcsfs
+defusedxml==0.7.1
+    # via nltk
+deprecation==2.1.0
+    # via evidently
 dictdiffer==0.9.0
     # via dvc-data
 diskcache==5.6.3
@@ -209,10 +220,16 @@ dvc-studio-client==0.22.0
     # via dvc
 dvc-task==0.40.2
     # via dvc
+dynaconf==3.3.2
+    # via evidently
 entrypoints==0.4
     # via gto
+evidently==0.7.21
+    # via -r requirements.in
 exceptiongroup==1.3.1
     # via prefect
+faker==40.28.1
+    # via polyfactory
 fastapi==0.136.1
     # via
     #   mlflow-skinny
@@ -246,6 +263,7 @@ fsspec[http,tqdm]==2026.4.0
     #   dvc-data
     #   dvc-http
     #   dvc-objects
+    #   evidently
     #   gcsfs
     #   prefect
     #   pydrive2
@@ -361,9 +379,12 @@ httplib2==0.31.2
     #   google-api-python-client
     #   google-auth-httplib2
     #   oauth2client
+httptools==0.8.0
+    # via uvicorn
 httpx[http2]==0.28.1
     # via
     #   -r requirements.in
+    #   litestar
     #   prefect
 huey==2.6.0
     # via mlflow
@@ -398,7 +419,9 @@ importlib-metadata==8.7.1
 iniconfig==2.3.0
     # via pytest
 iterative-telemetry==0.0.10
-    # via dvc
+    # via
+    #   dvc
+    #   evidently
 itsdangerous==2.2.0
     # via flask
 jinja2==3.1.6
@@ -412,6 +435,7 @@ jinja2-humanize-extension==0.4.0
 joblib==1.5.3
     # via
     #   imbalanced-learn
+    #   nltk
     #   phik
     #   scikit-learn
 jsonpatch==1.33
@@ -433,6 +457,10 @@ librt==0.9.0
     # via mypy
 lightgbm==4.6.0
     # via -r requirements.in
+litestar==2.24.0
+    # via evidently
+litestar-htmx==0.5.0
+    # via litestar
 llvmlite==0.45.1
     # via numba
 loguru==0.7.3
@@ -466,14 +494,19 @@ mlflow-skinny==3.11.1
     # via mlflow
 mlflow-tracing==3.11.1
     # via mlflow
+msgspec==0.21.1
+    # via litestar
 multidict==6.7.1
     # via
     #   aiohttp
+    #   litestar
     #   yarl
 multimethod==1.12
     # via
     #   visions
     #   ydata-profiling
+multipart==1.3.1
+    # via litestar
 mypy==1.20.2
     # via -r requirements.in
 mypy-extensions==1.1.0
@@ -485,6 +518,8 @@ networkx==3.6.1
     # via
     #   dvc
     #   visions
+nltk==3.10.0
+    # via evidently
 nodeenv==1.10.0
     # via pre-commit
 numba==0.62.1
@@ -493,6 +528,7 @@ numpy==2.3.5
     # via
     #   -r requirements.in
     #   contourpy
+    #   evidently
     #   imagehash
     #   imbalanced-learn
     #   lightgbm
@@ -530,6 +566,7 @@ opentelemetry-api==1.41.1
     #   pydocket
 opentelemetry-proto==1.41.1
     # via
+    #   evidently
     #   mlflow-skinny
     #   mlflow-tracing
 opentelemetry-sdk==1.41.1
@@ -548,6 +585,7 @@ orjson==3.11.9
 packaging==26.2
     # via
     #   black
+    #   deprecation
     #   dvc
     #   gunicorn
     #   hydra-core
@@ -557,13 +595,15 @@ packaging==26.2
     #   mlflow-tracing
     #   optuna
     #   pandera
+    #   plotly
     #   prefect
     #   pytest
     #   skops
     #   statsmodels
-pandas==2.3.3
+pandas[parquet]==2.3.3
     # via
     #   -r requirements.in
+    #   evidently
     #   mlflow
     #   phik
     #   seaborn
@@ -597,11 +637,15 @@ platformdirs==4.9.6
     #   dvc
     #   python-discovery
     #   virtualenv
+plotly==5.24.1
+    # via evidently
 pluggy==1.6.0
     # via
     #   prefect
     #   pytest
     #   pytest-cov
+polyfactory==3.3.0
+    # via litestar
 pre-commit==4.6.0
     # via -r requirements.in
 prefect==3.7.2
@@ -611,7 +655,10 @@ prettytable==3.17.0
 prometheus-client==0.25.0
     # via
     #   prefect
+    #   prometheus-fastapi-instrumentator
     #   pydocket
+prometheus-fastapi-instrumentator==8.0.2
+    # via -r requirements.in
 prompt-toolkit==3.0.52
     # via click-repl
 propcache==0.4.1
@@ -643,7 +690,9 @@ puremagic==1.30
 py-key-value-aio[memory,redis]==0.4.5
     # via pydocket
 pyarrow==23.0.1
-    # via mlflow
+    # via
+    #   mlflow
+    #   pandas
 pyasn1==0.6.3
     # via
     #   oauth2client
@@ -657,6 +706,7 @@ pycparser==3.0
     # via cffi
 pydantic==2.13.3
     # via
+    #   evidently
     #   fastapi
     #   gto
     #   mlflow-skinny
@@ -725,6 +775,7 @@ python-dotenv==1.2.2
     # via
     #   mlflow-skinny
     #   pydantic-settings
+    #   uvicorn
 python-json-logger==4.1.0
     # via pydocket
 python-slugify==8.0.4
@@ -741,12 +792,15 @@ pywavelets==1.9.0
 pyyaml==6.0.3
     # via
     #   apprise
+    #   evidently
+    #   litestar
     #   mlflow-skinny
     #   omegaconf
     #   optuna
     #   pre-commit
     #   prefect
     #   pydrive2
+    #   uvicorn
     #   ydata-profiling
 readchar==4.2.2
     # via prefect
@@ -759,7 +813,9 @@ referencing==0.37.0
     #   jsonschema
     #   jsonschema-specifications
 regex==2026.5.9
-    # via dateparser
+    # via
+    #   dateparser
+    #   nltk
 requests==2.33.1
     # via
     #   apprise
@@ -767,6 +823,7 @@ requests==2.33.1
     #   docker
     #   dvc
     #   dvc-studio-client
+    #   evidently
     #   gcsfs
     #   google-api-core
     #   google-cloud-storage
@@ -784,11 +841,16 @@ rich==15.0.0
     # via
     #   cyclopts
     #   dvc
+    #   evidently
     #   gto
+    #   litestar
     #   prefect
     #   pydocket
+    #   rich-click
     #   rich-rst
     #   typer
+rich-click==1.9.8
+    # via litestar
 rich-rst==2.0.1
     # via cyclopts
 rpds-py==2026.5.1
@@ -809,12 +871,14 @@ ruff==0.15.12
 scikit-learn==1.8.0
     # via
     #   -r requirements.in
+    #   evidently
     #   imbalanced-learn
     #   mlflow
     #   sklearn-compat
     #   skops
 scipy==1.16.3
     # via
+    #   evidently
     #   imagehash
     #   imbalanced-learn
     #   lightgbm
@@ -856,6 +920,7 @@ smmap==5.0.3
 sniffio==1.3.1
     # via
     #   asgi-lifespan
+    #   litestar
     #   prefect
 sqlalchemy[asyncio]==2.0.49
     # via
@@ -868,13 +933,19 @@ sqlparse==0.5.5
 sqltrie==0.11.2
     # via dvc-data
 starlette==1.0.0
-    # via fastapi
+    # via
+    #   fastapi
+    #   prometheus-fastapi-instrumentator
 statsmodels==0.14.6
-    # via ydata-profiling
+    # via
+    #   evidently
+    #   ydata-profiling
 tabulate==0.10.0
     # via
     #   dvc
     #   gto
+tenacity==9.1.4
+    # via plotly
 text-unidecode==1.3
     # via python-slugify
 threadpoolctl==3.6.0
@@ -890,6 +961,7 @@ tqdm==4.67.3
     #   dvc
     #   dvc-data
     #   fsspec
+    #   nltk
     #   optuna
     #   pydrive2
     #   scmrepo
@@ -900,6 +972,7 @@ typeguard==4.5.1
     #   ydata-profiling
 typer==0.25.1
     # via
+    #   evidently
     #   gto
     #   pydocket
 typing-extensions==4.15.0
@@ -913,12 +986,14 @@ typing-extensions==4.15.0
     #   fastapi
     #   graphene
     #   grpcio
+    #   litestar
     #   mlflow-skinny
     #   mypy
     #   opentelemetry-api
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     #   pandera
+    #   polyfactory
     #   prefect
     #   py-key-value-aio
     #   pydantic
@@ -932,7 +1007,9 @@ typing-extensions==4.15.0
     #   typing-inspect
     #   typing-inspection
 typing-inspect==0.9.0
-    # via pandera
+    # via
+    #   evidently
+    #   pandera
 typing-inspection==0.4.2
     # via
     #   fastapi
@@ -947,6 +1024,8 @@ tzlocal==5.3.1
     # via
     #   celery
     #   dateparser
+ujson==5.13.0
+    # via evidently
 uncalled-for==0.3.2
     # via pydocket
 uritemplate==4.2.0
@@ -955,11 +1034,17 @@ urllib3==2.6.3
     # via
     #   docker
     #   dulwich
+    #   evidently
     #   requests
-uvicorn==0.46.0
+uuid6==2025.0.1
+    # via evidently
+uvicorn[standard]==0.46.0
     # via
+    #   evidently
     #   mlflow-skinny
     #   prefect
+uvloop==0.22.1
+    # via uvicorn
 vine==5.1.0
     # via
     #   amqp
@@ -973,12 +1058,18 @@ voluptuous==0.16.0
     # via
     #   dvc
     #   dvc-studio-client
+watchdog==6.0.0
+    # via evidently
+watchfiles==1.2.0
+    # via uvicorn
 wcwidth==0.6.0
     # via
     #   prettytable
     #   prompt-toolkit
 websockets==16.0
-    # via prefect
+    # via
+    #   prefect
+    #   uvicorn
 werkzeug==3.1.8
     # via
     #   flask
