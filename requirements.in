@@ -56,3 +56,6 @@ prometheus-fastapi-instrumentator
 
 # Phase 8 — data drift detection
 evidently
+
+# Phase 8 — load testing
+locust
