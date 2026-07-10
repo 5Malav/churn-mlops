@@ -262,7 +262,41 @@ uvicorn src.churn_mlops.api.app:app --reload
 | POST | `/predict` | Send a customer → get churn probability + prediction |
 | GET | `/metrics` | Prometheus metrics (request count, latency, status codes) |
 
-**Example prediction request (against the LIVE deployment):**
+### 🧪 Try It Yourself
+
+The API is live — you can hit it right now. The easiest way is the interactive Swagger UI at **[/docs](https://churn-api-215271667398.asia-south1.run.app/docs)** (click `POST /predict` → "Try it out" → paste a sample below → Execute). Or use `curl` from your terminal.
+
+> **Note:** the first request may take a few seconds — Cloud Run scales to zero when idle, so it "cold starts" the container. After that it's fast (~11ms of compute per prediction).
+
+**Sample 1 — high-churn customer** (short tenure, month-to-month contract, fiber, electronic check):
+
+```json
+{
+  "gender": "Female", "SeniorCitizen": 0, "Partner": "No", "Dependents": "No",
+  "tenure": 2, "PhoneService": "Yes", "MultipleLines": "No",
+  "InternetService": "Fiber optic", "OnlineSecurity": "No", "OnlineBackup": "No",
+  "DeviceProtection": "No", "TechSupport": "No", "StreamingTV": "No",
+  "StreamingMovies": "No", "Contract": "Month-to-month", "PaperlessBilling": "Yes",
+  "PaymentMethod": "Electronic check", "MonthlyCharges": 70.70, "TotalCharges": 151.65
+}
+```
+→ Returns a **high** churn probability (`churn_prediction: 1`).
+
+**Sample 2 — low-churn customer** (long tenure, two-year contract, full add-ons, auto-pay):
+
+```json
+{
+  "gender": "Male", "SeniorCitizen": 0, "Partner": "Yes", "Dependents": "Yes",
+  "tenure": 68, "PhoneService": "Yes", "MultipleLines": "Yes",
+  "InternetService": "DSL", "OnlineSecurity": "Yes", "OnlineBackup": "Yes",
+  "DeviceProtection": "Yes", "TechSupport": "Yes", "StreamingTV": "Yes",
+  "StreamingMovies": "Yes", "Contract": "Two year", "PaperlessBilling": "No",
+  "PaymentMethod": "Bank transfer (automatic)", "MonthlyCharges": 85.25, "TotalCharges": 5800.00
+}
+```
+→ Returns a **low** churn probability (`churn_prediction: 0`).
+
+**With curl** (using Sample 1):
 
 ```bash
 curl -X POST https://churn-api-215271667398.asia-south1.run.app/predict \
